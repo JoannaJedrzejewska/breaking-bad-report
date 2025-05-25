@@ -1,0 +1,64 @@
+---
+title: "Breaking Bad Viewership Report"
+author: "Joanna Jędrzejewska"
+format: html
+editor: visual
+---
+
+# *Breaking Bad*: Description
+
+Breaking Bad is an American crime drama television series created and produced by Vince Gilligan. The show aired on AMC from January 20, 2008 to September 29, 2013, spanning five seasons. It stars Bryan Cranston as Walter White, a chemistry teacher turned methamphetamine producer, and Aaron Paul as his former student and business partner, Jesse Pinkman.
+
+![Breaking Bad Logo](https://en.wikipedia.org/wiki/Breaking_Bad#/media/File:Breaking_Bad_logo.svg)
+
+## Viewership
+
+```{r}
+library(tidyverse)
+viewership <- read.csv("/Users/joannajedrzejewska/breaking-bad-report/viewership.csv", quote = "\"", stringsAsFactors = FALSE)
+summary(viewership)
+```
+
+The average viewership increased significantly during the final season. The highest first episode viewership was 5.92 million, while the final episode reached a peak of 10.28 million viewers.
+
+# Viewership Over Time
+
+```{r}
+viewership$Season <- as.character(viewership$Season)
+viewership$Season <- factor(viewership$Season, levels = c("1", "2", "3", "4", "5A", "5B"))
+
+ggplot(viewership, aes(x = Season, y = Viewers_millions_avg)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = Viewers_millions_avg), vjust = -0.5) +
+  labs(title = "Average Viewership per Season",
+       y = "Viewers (millions)",
+       x = "Season") +
+  theme_minimal()
+
+```
+
+# Change in viewership
+
+```{r}
+viewership$Viewers_millions_first_aired <- as.numeric(viewership$Viewers_millions_first_aired)
+viewership$Viewers_millions_last_aired <- as.numeric(viewership$Viewers_millions_last_aired)
+
+viewership$change <- viewership$Viewers_millions_last_aired - viewership$Viewers_millions_first_aired
+viewership_clean <- na.omit(viewership[, c("Season", "change")])
+viewership_clean <- viewership[!is.na(viewership$change), ]
+
+library(ggplot2)
+
+ggplot(viewership_clean, aes(x = as.numeric(Season), y = change)) +
+  geom_bar(stat = "identity", fill = "pink") +
+  geom_line(color = "indianred", size = 1) +
+  labs(title = "Change in Viewership (First vs Last Episode)",
+       y = "Change in Viewers (millions)",
+       x = "Season") +
+  theme_minimal()
+
+```
+
+# Summary
+
+Viewership gradually increased across seasons. For instance, between season 3 and 5B, average viewership rose from 1.52 to 4.32 million, a growth of nearly 2.8 million viewers. The final episode was the most watched in the series with 10.28 million viewers, which is a huge jump from 1.56 million in the last episode of season 3.
