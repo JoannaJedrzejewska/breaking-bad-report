@@ -15,7 +15,9 @@ Breaking Bad is an American crime drama television series created and produced b
 
 ```{r}
 library(tidyverse)
-viewership <- read.csv("/Users/joannajedrzejewska/breaking-bad-report/viewership.csv", quote = "\"", stringsAsFactors = FALSE)
+
+url <- "https://raw.githubusercontent.com/JoannaJedrzejewska/breaking-bad-report/refs/heads/main/viewership.csv"
+viewership <- read.csv(url, stringsAsFactors = FALSE)
 summary(viewership)
 ```
 
@@ -47,11 +49,13 @@ viewership$change <- viewership$Viewers_millions_last_aired - viewership$Viewers
 viewership_clean <- na.omit(viewership[, c("Season", "change")])
 viewership_clean <- viewership[!is.na(viewership$change), ]
 
-library(ggplot2)
+custom_labels <- c("1", "2", "3", "4", "5A", "5B")
 
-ggplot(viewership_clean, aes(x = as.numeric(Season), y = change)) +
+viewership_clean$Season <- factor(viewership_clean$Season, levels = custom_labels)
+
+ggplot(viewership_clean, aes(x = Season, y = change, group = 1)) +
   geom_bar(stat = "identity", fill = "pink") +
-  geom_line(color = "indianred", size = 1) +
+  geom_line(aes(y = change), color = "indianred", size = 1) +
   labs(title = "Change in Viewership (First vs Last Episode)",
        y = "Change in Viewers (millions)",
        x = "Season") +
@@ -62,3 +66,4 @@ ggplot(viewership_clean, aes(x = as.numeric(Season), y = change)) +
 # Summary
 
 Viewership gradually increased across seasons. For instance, between season 3 and 5B, average viewership rose from 1.52 to 4.32 million, a growth of nearly 2.8 million viewers. The final episode was the most watched in the series with 10.28 million viewers, which is a huge jump from 1.56 million in the last episode of season 3.
+However, we can also see that season 4 exhibits the most significant drop, suggesting a loss of viewers during the middle of the series. In contrast, Season 5B shows a strong spike in viewership, likely reflecting heightened anticipation or the climactic resolution of the series, which often draws in both returning and new audiences. The earlier seasons demonstrate only minor fluctuations, indicative of a fanbase that was still developing and somewhat volatile in its engagement.
